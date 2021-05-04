@@ -1,30 +1,19 @@
-language: cpp
+- cmake --build _build --target package_source
+- cd _build
+- if [ "$TRAVIS_OS_NAME" = "osx" ]; then cpack -G DragNDrop  ;fi
+- if [ "$TRAVIS_OS_NAME" = "linux" ]; then cpack -G DEB  ;fi
+- if [ "$TRAVIS_OS_NAME" = "linux" ]; then cpack -G RPM  ;fi
 
-compiler:
-- gcc
-- clang
-
-addons:
-apt:
- sources:
-  - ubuntu-toolchain-r-test
-  - llvm-toolchain-precise-3.7
- packages:
-  - cmake
-  - cmake-data
-  - clang-3.7
-  - g++-7
-
-script:
-- cd hello_world_application
-- cmake -H. -B_build
-- cmake --build _build
-- cmake --build _build --target hello_world
-- ./_build/hello_world
-- echo "Hello world application testing is done"
-- cd ..
-- cd solver_application
-- cmake -H. -B_build
-- cmake --build _build
-- cmake --build _build --target solver
-- echo "Solver application testing is done"
+deploy:
+ provider: releases
+ api_key:
+   secure:     fh2+OzfhkqhtoCB8qhD/98ROIauQcQKaQ4lDPQRPGfmnL/Rzkmtu/X5QUqOWt2KQ/vv/XHlzce5YDCyNYS2NfMgKkSp3hE8cGtUtpspxGRb8zuQHruJQWIUbFmWsA3XsJKymvnMXuu7KHM4cHLFwywBdAV47R4ECpRdKQd1NgIJK2yLzis+VAQ4SbSh3rJFEkhSqV17js9MGZRXDwScKftmy2EUQgzQDt/X+NLha8vhTAtc+/j1mE2pQaOSGG3F9S6T7VUud+thuoqZ7M/WeAH2wgKiFPPMYLX+LUEUxg7SVF88ZoXS7dQttyTWYNdB6jAhmE6DcDhiJBdze2qvu44zE9DHynLj2ECftL8dC5tp2MuwH7j839q2OcLCWwu5IIo5GoIOcsYPRhsxDuaeOuGmX5egzQAv1D58FuKqfOXcH6TU+KX0rK+PlqndKK0Lr8avpcnT+KLrtbiu1ToUMgdmfl/tdL+QB97KzwaFEVvalQDR5XKIlqQOQq84SOQZs52GmL4fwHIDhJnAi9NB+Ud4TraKJw43qpj/AHwwLWsWOLshV8B+1oPUv9IP7Wklq5tIHNdcUkn8+uXSngxFZyrfWQbBMl37CeV0RGlL+x/aAXpGGOZxa6X00/D/u9MN/pE9ee2NkJIKF2xcm3zA5VZIEoawxf8LOyDBbRsH2rCY=
+ file:
+  - solver_application/_build/solver-source-files.zip
+  - solver_application/_build/solver-source-files.tar.gz
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then 'solver_application/_build/solver.dmg'  ;fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then 'solver_application/_build/solver.rpm'  ;fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then 'solver_application/_build/solver.deb'  ;fi
+ skip_cleanup: 'true'
+ on:
+  tags: true
